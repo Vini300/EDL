@@ -142,9 +142,6 @@ function getJogador(posx,posy)
 		jogador.selDir = false
 	end
 	return jogador
-
-	-- tarefa-06
-	-- A variável "jogador" contém um dicionário.
 end
 
 function getPickup(posx,posy)
@@ -342,26 +339,23 @@ function carregarNivel1()
 	--Bloco de edições para tarefa 07 termina aqui
 	pick = {}
 	obst = {}
-	posicoesPicks = {{600, 250}, {600, 50}, {150, 50}, {150, 500}}
-	pick[1] = getPickup(posicoesPicks[1][1], posicoesPicks[1][2])
-	pick[2] = getPickup(posicoesPicks[2][1], posicoesPicks[2][2])
-	pick[3] = getPickup(posicoesPicks[3][1], posicoesPicks[3][2])
-	pick[4] = getPickup(posicoesPicks[4][1], posicoesPicks[4][2])
-	posicoesObst = {{400, 250}, {600, 150}, {150, 150}, {150, 350}}
-	obst[1] = getObstaculo(posicoesObst[1][1], posicoesObst[1][2],20,100,200,450,200,100,2)
-	obst[2] = getObstaculo(posicoesObst[2][1], posicoesObst[2][2],20,60,700,150,500,150,1)
-	obst[3] = getObstaculo(posicoesObst[3][1], posicoesObst[3][2],80,40,250,200,50,200,1.3)
-	obst[4] = getObstaculo(posicoesObst[4][1], posicoesObst[4][2],80,40,250,200,50,200,-1.3)
+	pick[1] = getPickup(600,250)
+	pick[2] = getPickup(600,50)
+	pick[3] = getPickup(150,50)
+	pick[4] = getPickup(150,500)
+	obst[1] = getObstaculo(400,250,20,100,200,450,200,100,2)
+	obst[2] = getObstaculo(600,150,20,60,700,150,500,150,1)
+	obst[3] = getObstaculo(150,150,80,40,250,200,50,200,1.3)
+	obst[4] = getObstaculo(150,350,80,40,250,200,50,200,-1.3)
 	--Bloco de edições para tarefa 07 começa aqui
-	posicoesExtra = {{600, 320}, {600, 420}, {600, 150}, {450, 50}, {300, 50}, {150, 150}, {150, 370}, {370, 500}}
-	lugarExtras[1] = getMarcadorExtra(posicoesExtra[1][1], posicoesExtra[1][2])
-	lugarExtras[2] = getMarcadorExtra(posicoesExtra[2][1], posicoesExtra[2][2])
-	lugarExtras[3] = getMarcadorExtra(posicoesExtra[3][1], posicoesExtra[3][2])
-	lugarExtras[4] = getMarcadorExtra(posicoesExtra[4][1], posicoesExtra[4][2])
-	lugarExtras[5] = getMarcadorExtra(posicoesExtra[5][1], posicoesExtra[5][2])
-	lugarExtras[6] = getMarcadorExtra(posicoesExtra[6][1], posicoesExtra[6][2])
-	lugarExtras[7] = getMarcadorExtra(posicoesExtra[7][1], posicoesExtra[7][2])
-	lugarExtras[8] = getMarcadorExtra(posicoesExtra[8][1], posicoesExtra[8][2])
+	lugarExtras[1] = getMarcadorExtra(600,320)
+	lugarExtras[2] = getMarcadorExtra(600,420)
+	lugarExtras[3] = getMarcadorExtra(600,150)
+	lugarExtras[4] = getMarcadorExtra(450,50)
+	lugarExtras[5] = getMarcadorExtra(300,50)
+	lugarExtras[6] = getMarcadorExtra(150,150)
+	lugarExtras[7] = getMarcadorExtra(150,370)
+	lugarExtras[8] = getMarcadorExtra(370,500)
 	--Bloco de edições para tarefa 07 termina aqui
 	goal = getGoal(600,500) --gerar o objetivo
 end
