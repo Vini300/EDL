@@ -9,7 +9,7 @@ texto = ""
 -- a variável texto fosse criada como uma variável global fora de qualquer função)
 
 function getCartesiano(xv,yv)
-	local cartesiano = {}
+	local cartesiano = {"x" = xv, "y" = yv}
 	-- Nome: variável "cartesiano"
 	-- Propriedade: endereço
 	-- Binding time: execução
@@ -17,9 +17,10 @@ function getCartesiano(xv,yv)
 	-- por necessitar de variação no tamanho da tabela durante a execução e, já que toda variável criada na
 	-- Heap é criada em tempo de execução, o espaço de memória de "cartesiano" somente pode ser determinado
 	-- em tempo de execução.
-	cartesiano.x = xv
-	cartesiano.y = yv
 	return cartesiano
+	-- tarefa-06
+	-- A variável "cartesiano" contém um registro com 2 campos, uma coordenada "x" e uma coordenada "y". (tipo de dado #1 - registro)
+	-- Esta variável é um registro por ser um conjunto finito de valores heterogêneos, que tem seus campos finitos e definidos no construtor, no tempo de criação do registro.
 end
 -- Nome: função "getCartesiano()"
 -- Propriedade: implementação
@@ -142,6 +143,10 @@ function getJogador(posx,posy)
 		jogador.selDir = false
 	end
 	return jogador
+
+	-- tarefa-06
+	-- A variável "jogador" contém um dicionário que contém as variáveis e funções relacionadas ao objeto do jogador. (tipo de dado #2 - dicionário)
+	-- Esta variável é um dicionário por ser um conjunto infinito não-ordenado de valores heterogêneos, pois é construído como um dicionário "vazio", que tem seus campos adicionados dinamicamente em tempo de execução.
 end
 
 function getPickup(posx,posy)
@@ -288,6 +293,45 @@ function getVetExtra()
 	return vetExtra
 end
 
+-- tarefa-07
+-- Os pickups "extras" são criados dentro de uma coleção (array), criado na função "getVetExtra()", que controla a alocação e desalocação
+-- de cada um dos objetos, cuja implementação interna está descrita em "getExtra". Portanto, eles compõem uma coleção dinâmica de objetos,
+-- tais que os objetos são criados periodicamente, são removidos em eventos específicos e interagem com o jogador por meio de colisão.
+
+-- SOBRE A COLEÇÃO
+-- Escopo: A coleção está contida na variável "extras", que é uma variável global e, portanto, o escopo da coleção é um escopo global.
+-- Tempo de Vida: O tempo de vida da implementação (objeto) da coleção começa quando a função "getVetExtra()" for chamada, ou seja, no
+-- começo de uma nova "fase", e termina quando é substituído pelo próximo array, ou seja, quando a função "getVetExtra()" for chamada
+-- novamente, o que também acontece no começo de uma nova "fase". Portanto, o tempo de vida da implementação (objeto) do vetor possui
+-- um tempo de vida dinâmico (na heap). Porém, a variável "extras", que contém o vetor, tem um tempo de vida estático.
+-- Alocação: A alocação da implementação (objeto) do vetor acontece quando a função "getVetExtra()" for chamada, o que acontece no início
+-- de uma "fase", quando a função "carregarNivel1()" é chamada. A variável "extras", que contém o vetor, porém, é alocada estaticamente
+-- antes da execução, por ser uma variável global.
+-- Desalocação: A desalocação da implementação (objeto) do vetor acontece quando a referência a ele é perdida, pois ele foi substituído por um
+-- novo vetor de "extras", o que acontece quando a função "getVetExtra()" é chamada e a variável "extras" não é vazia. Portanto, ele é desalocado
+-- no início de uma nova "fase", depois que a "fase" atual termina. A variável "extras", que contém o vetor, porém, é desalocada estaticamente
+-- depois do fim da execução, por ser uma variável global.
+
+-- SOBRE O OBJETO
+-- Escopo: Cada objeto de pickup extra está sendo criado na função "getExtra()", e retornado dentro de "getVetExtra()", que depois está sendo
+-- retornado junto do vetor retornado por "getVetExtra()", estando finalmente contido na variável "extras", que é uma variável global. Portanto,
+-- o escopo de cada objeto de pickup extra é global.
+-- Tempo de Vida: O tempo de vida de um objeto de pickup extra começa quando a função "getExtra()" é chamada, ou seja, quando a função "adicionar()"
+-- do vetor é chamada, que acontece em tempos específicos do programa descritos na seção "Alocação". O tempo de vida de um objeto de pickup extra
+-- termina quando não há mais referência ao objeto, ou seja, quando a função "deletar()" é chamada, comandando a desalocação de um objeto específico.
+-- Isto também acontece em tempos específicos do programa, descritos na seção "Desalocação". Portanto, o tempo de vida é dinâmico (na heap).
+-- Alocação: A alocação de um objeto de pickup extra é feita toda vez que a função "adicionar()" do vetor for chamada, que ocorre em dois pontos
+-- do jogo. Um dos pontos é quando uma nova "fase" é gerada, onde um novo vetor de objetos é criado e, com ele, um número aleatório (de 1 ao número
+-- atual de pickups normais no jogo) de objetos são criados também. O outro ponto onde um objeto de pickup extra é alocado é quando o jogador coleta
+-- um pickup normal do jogo, que dispara para o jogo um pedido para criar um novo número aleatório (de 1 ao número de pickups restantes no jogo) de
+-- objetos de pickup extra.
+-- Desalocação: A desalocação de um objeto de pickup é feita toda vez que a função "deletar()" do vetor é chamada, por remover a referência ao objeto,
+-- fazendo com que o coletor de lixo da linguagem libere o espaço de memória ocupado pelo objeto. Isto ocorre em dois pontos do jogo, o primeiro sendo
+-- quando um jogador coleta (ou seja, colide) com um dos objetos de pickup extra, aonde o jogador ganha uma quantidade de pontos (50 ou 200, dependendo
+-- do tipo de objeto de pickup extra) e o objeto com qual o jogador colidiu chama a função "deletar()" de seu vetor pai, o que desaloca o objeto coletado.
+-- O outro ponto do jogo no qual a desalocação acontece é no fim de uma "fase", em que a função "limpar()" do vetor é chamada, já que o vetor tem de ser
+-- zerado para que uma nova coleção de objetos de pickup extras seja criado em seu lugar.
+
 function getExtra(posx,posy,tipoPoint,num,id)
 	local extra = {}
 	extra.pos = getCartesiano(posx,posy)
@@ -339,23 +383,29 @@ function carregarNivel1()
 	--Bloco de edições para tarefa 07 termina aqui
 	pick = {}
 	obst = {}
-	pick[1] = getPickup(600,250)
-	pick[2] = getPickup(600,50)
-	pick[3] = getPickup(150,50)
-	pick[4] = getPickup(150,500)
-	obst[1] = getObstaculo(400,250,20,100,200,450,200,100,2)
-	obst[2] = getObstaculo(600,150,20,60,700,150,500,150,1)
-	obst[3] = getObstaculo(150,150,80,40,250,200,50,200,1.3)
-	obst[4] = getObstaculo(150,350,80,40,250,200,50,200,-1.3)
+	posicoesPicks = {{600, 250}, {600, 50}, {150, 50}, {150, 500}}
+	pick[1] = getPickup(posicoesPicks[1][1], posicoesPicks[1][2])
+	pick[2] = getPickup(posicoesPicks[2][1], posicoesPicks[2][2])
+	pick[3] = getPickup(posicoesPicks[3][1], posicoesPicks[3][2])
+	pick[4] = getPickup(posicoesPicks[4][1], posicoesPicks[4][2])
+	--tarefa-06
+	-- A variável "pick" contém um array de objetos "pickups". (tipo de dado #3 - arrays)
+	-- Essa variável é um array pois é um conjunto infinito e ordenado de valores homogêneos, tais que os elementos são identificados por seus índices.
+	posicoesObst = {{400, 250}, {600, 150}, {150, 150}, {150, 350}}
+	obst[1] = getObstaculo(posicoesObst[1][1], posicoesObst[1][2],20,100,200,450,200,100,2)
+	obst[2] = getObstaculo(posicoesObst[2][1], posicoesObst[2][2],20,60,700,150,500,150,1)
+	obst[3] = getObstaculo(posicoesObst[3][1], posicoesObst[3][2],80,40,250,200,50,200,1.3)
+	obst[4] = getObstaculo(posicoesObst[4][1], posicoesObst[4][2],80,40,250,200,50,200,-1.3)
 	--Bloco de edições para tarefa 07 começa aqui
-	lugarExtras[1] = getMarcadorExtra(600,320)
-	lugarExtras[2] = getMarcadorExtra(600,420)
-	lugarExtras[3] = getMarcadorExtra(600,150)
-	lugarExtras[4] = getMarcadorExtra(450,50)
-	lugarExtras[5] = getMarcadorExtra(300,50)
-	lugarExtras[6] = getMarcadorExtra(150,150)
-	lugarExtras[7] = getMarcadorExtra(150,370)
-	lugarExtras[8] = getMarcadorExtra(370,500)
+	posicoesExtra = {{600, 320}, {600, 420}, {600, 150}, {450, 50}, {300, 50}, {150, 150}, {150, 370}, {370, 500}}
+	lugarExtras[1] = getMarcadorExtra(posicoesExtra[1][1], posicoesExtra[1][2])
+	lugarExtras[2] = getMarcadorExtra(posicoesExtra[2][1], posicoesExtra[2][2])
+	lugarExtras[3] = getMarcadorExtra(posicoesExtra[3][1], posicoesExtra[3][2])
+	lugarExtras[4] = getMarcadorExtra(posicoesExtra[4][1], posicoesExtra[4][2])
+	lugarExtras[5] = getMarcadorExtra(posicoesExtra[5][1], posicoesExtra[5][2])
+	lugarExtras[6] = getMarcadorExtra(posicoesExtra[6][1], posicoesExtra[6][2])
+	lugarExtras[7] = getMarcadorExtra(posicoesExtra[7][1], posicoesExtra[7][2])
+	lugarExtras[8] = getMarcadorExtra(posicoesExtra[8][1], posicoesExtra[8][2])
 	--Bloco de edições para tarefa 07 termina aqui
 	goal = getGoal(600,500) --gerar o objetivo
 end
@@ -371,7 +421,11 @@ function reiniciar()
 	movedor = love.graphics.newImage("mover.png")
 	extra50 = love.graphics.newImage("fuel50.png")
 	extra200 = love.graphics.newImage("fuel200.png")
-	fim = getAnimacao(love.graphics.newImage("goalanim.png"),50,50,0.5)
+	animTup = {love.graphics.newImage("goalanim.png"), 50, 50, 0.5}
+	--tarefa-06
+	-- A variavel "animTup" é uma tupla de valores relacionados a animação do objeto "fim". (tipo de dado #4 - tuplas)
+	-- Esta variável é uma tupla pois pois é um conjunto finito de valores heterogêneos tal que cada elemento é identificado por sua posiçao.
+	fim = getAnimacao(animTup[1], animTup[2], animTup[3], animTup[4])
 	fundo = love.graphics.newImage("fundo.png")
 	carregarNivel1()
 end
